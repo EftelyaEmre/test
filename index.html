@@ -680,10 +680,11 @@
     let touchStartY = 0;
 
     function initGame() {
+      // Schlange initialisieren (nebeneinander platziert)
       snake = [
-        { x: 8, y: 10 },
-        { x: 7, y: 10 },
-        { x: 6, y: 10 }
+        { x: 10, y: 10 },
+        { x: 9, y: 10 },
+        { x: 8, y: 10 }
       ];
 
       direction = { x: 1, y: 0 };
@@ -711,7 +712,6 @@
 
     function updateGame() {
       if (isPaused || isGameOver) {
-        drawGame();
         return;
       }
 
@@ -722,16 +722,15 @@
         y: snake[0].y + direction.y
       };
 
-      if (
-        head.x < 0 ||
-        head.x >= columns ||
-        head.y < 0 ||
-        head.y >= rows ||
-        snake.some(part => part.x === head.x && part.y === head.y)
-      ) {
-        isGameOver = true;
-        pauseButton.textContent = "NEU";
-        drawGame();
+      // Spielfeldrand-Kollision prüfen
+      if (head.x < 0 || head.x >= columns || head.y < 0 || head.y >= rows) {
+        endGame();
+        return;
+      }
+
+      // Selbstkollision prüfen (Kopf darf nicht den Körper treffen)
+      if (snake.some(part => part.x === head.x && part.y === head.y)) {
+        endGame();
         return;
       }
 
@@ -744,6 +743,12 @@
         snake.pop();
       }
 
+      drawGame();
+    }
+
+    function endGame() {
+      isGameOver = true;
+      pauseButton.textContent = "NEU";
       drawGame();
     }
 
